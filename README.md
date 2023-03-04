@@ -1,1 +1,1 @@
-# BSUIR_AOIS
+Just my laboratory works on AOIS
