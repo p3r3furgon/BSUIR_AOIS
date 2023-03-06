@@ -3,7 +3,6 @@ using System.Linq;
 
 namespace AOIS_2
 {
-
     public static class LogicCalculator
     {
         public static bool Calculating(List<string> tokens, List<string> vars, Dictionary<string, bool> values, Stack<string> stackSigns, Stack<bool> stackVars)
@@ -15,7 +14,7 @@ namespace AOIS_2
                     stackVars.Push(values[token]);
                 else if (signs.Contains(token))
                 {
-                    while (stackSigns.Count >= 1 && Priorety(stackSigns.Peek()) >= Priorety(token))
+                    while (stackSigns.Count >= 1 && Priority(stackSigns.Peek()) >= Priority(token))
                         stackVars.Push(ExecuteOperation(stackVars, stackSigns.Pop()));
                     stackSigns.Push(token);
                 }
@@ -57,7 +56,7 @@ namespace AOIS_2
                 return ExecuteBinaryOperation(stackVars, sign);
         }
 
-        static int Priorety(string sign)
+        static int Priority(string sign)
         {
             if (sign == "!")
                 return 5;
@@ -67,8 +66,10 @@ namespace AOIS_2
                 return 3;
             else if (sign == "->")
                 return 2;
-            else
+            else if (sign == "#")
                 return 1;
+            else
+                return 0;
         }
         static bool Conjunction(bool x1, bool x2)
         {

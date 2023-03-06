@@ -9,7 +9,8 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AOIS_2{
+namespace AOIS_2
+{
     internal class Program
     {
         static void Main(string[] args)
