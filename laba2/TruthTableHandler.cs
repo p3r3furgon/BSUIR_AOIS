@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using System.Text;
+using Microsoft.SqlServer.Server;
 
 namespace AOIS_2
 {
@@ -84,10 +85,15 @@ namespace AOIS_2
         {
             StringBuilder disjuctionFunction = new StringBuilder();
             List<string> functionParts = CalculatingPartsOfPDNF(truthTable, vars, expressionResult);
-            disjuctionFunction.Append(functionParts[0]);
-            for(int i = 1; i < functionParts.Count; i++)
-                disjuctionFunction.Append("+" + functionParts[i]);
-            Console.WriteLine("PDNF:\n\n" + disjuctionFunction.ToString() + "\n");
+            if (functionParts.Count != 0)
+            {
+                disjuctionFunction.Append(functionParts[0]);
+                for (int i = 1; i < functionParts.Count; i++)
+                    disjuctionFunction.Append("+" + functionParts[i]);
+                Console.WriteLine("Principal disjunction normal function:\n\n" + disjuctionFunction.ToString() + "\n");
+            }
+            else
+                Console.WriteLine("Principal disjunction normal function doesn't exist\n\n");
         }
 
         public static List<string> CalculatingPartsOfPCNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResult)
@@ -120,11 +126,15 @@ namespace AOIS_2
         {
             StringBuilder disjuctionFunction = new StringBuilder();
             List<string> functionParts = CalculatingPartsOfPCNF(truthTable, vars, expressionResult);
-            disjuctionFunction.Append(functionParts[0]);
-            for (int i = 1; i < functionParts.Count; i++)
-                disjuctionFunction.Append("*" + functionParts[i]);
-            Console.WriteLine("PCNF:\n\n" + disjuctionFunction.ToString() + "\n");
+            if (functionParts.Count != 0)
+            {
+                disjuctionFunction.Append(functionParts[0]);
+                for (int i = 1; i < functionParts.Count; i++)
+                    disjuctionFunction.Append("*" + functionParts[i]);
+                Console.WriteLine("Principal conjuction normal function:\n\n" + disjuctionFunction.ToString() + "\n");
+            }
+            else
+                Console.WriteLine("Principal conjuction normal function doesn't exist\n\n");
         }
     }
-
 }
