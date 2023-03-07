@@ -35,6 +35,8 @@ namespace AOIS_2
                 expressionResult.Add(LogicCalculator.Calculating(tokens, vars, variablesValues, stackSigns, stackVars));
             }            
             TruthTableHandler.PrintTruthTable(truthTable, vars, expressionResult);
+            TruthTableHandler.PrintPDNF(truthTable, vars, expressionResult);
+            TruthTableHandler.PrintPCNF(truthTable, vars, expressionResult);
 
         }
 

@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System;
+using System.Text;
 
 namespace AOIS_2
 {
@@ -40,7 +41,7 @@ namespace AOIS_2
         {
             for(int i = 0; i < vars.Count; i++)
                 Console.Write(vars[i] + "\t");
-            Console.WriteLine("res");
+            Console.WriteLine("expression");
             for (int i = 0; i < truthTable.Count; i++)
             {
                 for (int j = 0; j < truthTable[i].Count; j++)
@@ -50,6 +51,79 @@ namespace AOIS_2
                 Console.Write(expressionResult[i] ? "1\t" : "0\t");
                 Console.WriteLine();
             }
+            Console.WriteLine();
+        }
+
+        public static List<string> CalculatingPartsOfPDNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResult)
+        {
+            List<List<bool>> suitableOptions = new List<List<bool>>();
+            List<string> functionParts = new List<string>();
+            for(int i = 0; i < expressionResult.Count; i++)
+            {
+                if (expressionResult[i])
+                    suitableOptions.Add(truthTable[i]);
+            }
+            for (int i = 0; i < suitableOptions.Count; i++)
+            {
+                StringBuilder functionPart = new StringBuilder("(");
+                for(int j = 0; j < vars.Count; j++)
+                {
+                    if (suitableOptions[i][j])
+                        functionPart.Append(vars[j] + "*");
+                    else
+                        functionPart.Append("(!" + vars[j] + ")*");
+                }
+                functionPart.Remove(functionPart.Length-1,1);
+                functionPart.Append(")");
+                functionParts.Add(functionPart.ToString());
+            }
+            return functionParts;
+        }
+
+        public static void PrintPDNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResult)
+        {
+            StringBuilder disjuctionFunction = new StringBuilder();
+            List<string> functionParts = CalculatingPartsOfPDNF(truthTable, vars, expressionResult);
+            disjuctionFunction.Append(functionParts[0]);
+            for(int i = 1; i < functionParts.Count; i++)
+                disjuctionFunction.Append("+" + functionParts[i]);
+            Console.WriteLine("PDNF:\n\n" + disjuctionFunction.ToString() + "\n");
+        }
+
+        public static List<string> CalculatingPartsOfPCNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResult)
+        {
+            List<List<bool>> suitableOptions = new List<List<bool>>();
+            List<string> functionParts = new List<string>();
+            for (int i = 0; i < expressionResult.Count; i++)
+            {
+                if (!expressionResult[i])
+                    suitableOptions.Add(truthTable[i]);
+            }
+            for (int i = 0; i < suitableOptions.Count; i++)
+            {
+                StringBuilder functionPart = new StringBuilder("(");
+                for (int j = 0; j < vars.Count; j++)
+                {
+                    if (!suitableOptions[i][j])
+                        functionPart.Append(vars[j] + "+");
+                    else
+                        functionPart.Append("(!" + vars[j] + ")+");
+                }
+                functionPart.Remove(functionPart.Length - 1, 1);
+                functionPart.Append(")");
+                functionParts.Add(functionPart.ToString());
+            }
+            return functionParts;
+        }
+
+        public static void PrintPCNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResult)
+        {
+            StringBuilder disjuctionFunction = new StringBuilder();
+            List<string> functionParts = CalculatingPartsOfPCNF(truthTable, vars, expressionResult);
+            disjuctionFunction.Append(functionParts[0]);
+            for (int i = 1; i < functionParts.Count; i++)
+                disjuctionFunction.Append("*" + functionParts[i]);
+            Console.WriteLine("PCNF:\n\n" + disjuctionFunction.ToString() + "\n");
         }
     }
 
