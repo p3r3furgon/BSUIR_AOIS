@@ -126,6 +126,11 @@ namespace AOIS_2
         }
         public static bool IsExpressionCorrect(string expression, List<string> tokens, List<string> uniqeVars)
         {
+            if(uniqeVars.Count == 0)
+            {
+                Console.WriteLine("There are no any variables in expression");
+                return false;
+            }
 
             for (int i = 0; i < tokens.Count; i++)
             {

@@ -95,7 +95,7 @@ namespace AOIS_2
                     TruthTableHandler.PrintPDNF(truthTable, uniqeVars, expressionResult);
                     TruthTableHandler.PrintPCNF(truthTable, uniqeVars, expressionResult);
                 }
-                Console.WriteLine("\n\n\n\nPress any key to continue");
+                Console.WriteLine("\n\nPress any key to continue . . .");
                 Console.ReadLine();
             }
         }
