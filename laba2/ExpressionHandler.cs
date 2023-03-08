@@ -49,6 +49,7 @@ namespace AOIS_2
                 }
             }
         }
+
         static bool ComparingNumberOfBrackets(string expression)
         {
             try
@@ -124,6 +125,7 @@ namespace AOIS_2
             }
             return true;
         }
+
         public static bool IsExpressionCorrect(string expression, List<string> tokens, List<string> uniqeVars)
         {
             if(uniqeVars.Count == 0)

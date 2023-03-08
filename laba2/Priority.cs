@@ -9,7 +9,7 @@ namespace AOIS_2
     internal static class Priority
     {
         private static readonly Dictionary<string, int> priorities;
-        
+
         static Priority()
         {
             priorities = new Dictionary<string, int>();
@@ -19,13 +19,13 @@ namespace AOIS_2
             priorities.Add("->", 2);
             priorities.Add("==", 1);
         }
+
         public static int GetPriority(string sign)
         {
             if(priorities.ContainsKey(sign))
-                return priorities[sign];
-            else 
+                return priorities[sign]; 
+            else
                 return 0;
         }
     }
-    
 }

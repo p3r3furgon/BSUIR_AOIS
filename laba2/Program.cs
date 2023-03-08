@@ -92,8 +92,7 @@ namespace AOIS_2
                         expressionResult.Add(LogicCalculator.Calculating(tokens, uniqeVars, varsValues, stackSigns, stackVars));
                     }
                     TruthTableHandler.PrintTruthTable(truthTable, uniqeVars, expressionResult);
-                    TruthTableHandler.PrintPDNF(truthTable, uniqeVars, expressionResult);
-                    TruthTableHandler.PrintPCNF(truthTable, uniqeVars, expressionResult);
+                    TruthTableHandler.PrintTotalResults(truthTable, uniqeVars, expressionResult);
                 }
                 Console.WriteLine("\n\nPress any key to continue . . .");
                 Console.ReadLine();
