@@ -14,7 +14,7 @@ namespace AOIS_2
         {
             for (int i = 0; i < expression.Length; i++)
             {
-                if ((expression[i] >= 65 && expression[i] <= 90) || (expression[i] >= 97 && expression[i] <= 122))
+                if (char.IsLetter(expression[i]))
                 {
                     int varSize = 1;
                     while (i + varSize < expression.Length && char.IsDigit(expression[i + varSize]))
@@ -31,15 +31,15 @@ namespace AOIS_2
             int varNumber = 0;
             for (int i = 0; i < expression.Length; i++)
             {
-                if ((expression[i] >= 65 && expression[i] <= 90) || (expression[i] >= 97 && expression[i] <= 122))
+                if (char.IsLetter(expression[i]))
                 {
                     tokens.Add(allVars[varNumber]);
                     i += (allVars[varNumber].Length - 1);
                     varNumber++;
                 }
-                else
+                else if (expression[i] != ' ')
                 {
-                    if (expression[i] == '-' && expression[i + 1] == '>')
+                    if ((expression[i] == '-' && expression[i + 1] == '>') || (expression[i] == '=' && expression[i + 1] == '='))
                     {
                         tokens.Add(expression.Substring(i, 2));
                         i++;
@@ -53,11 +53,11 @@ namespace AOIS_2
         {
             try
             {
-                int openParenthesis = (expression.Where(x => "(".IndexOf(x) != -1).Count());
-                int closingParenthesis = (expression.Where(x => ")".IndexOf(x) != -1).Count());
-                if (openParenthesis == closingParenthesis)
+                int openParenthesisCount = (expression.Where(x => "(".IndexOf(x) != -1).Count());
+                int closingParenthesisCount = (expression.Where(x => ")".IndexOf(x) != -1).Count());
+                if (openParenthesisCount == closingParenthesisCount)
                     return true;
-                else if (openParenthesis > closingParenthesis)
+                else if (openParenthesisCount > closingParenthesisCount)
                     throw new Exception("Incorrect expression. Expected \')\'");
                 else
                     throw new Exception("Incorrect expression. Unexpected \')\'");
@@ -65,7 +65,7 @@ namespace AOIS_2
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.Message);
                 return false;
             }
         }
@@ -83,14 +83,14 @@ namespace AOIS_2
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.Message);
                 return false;
             }
         }
 
         static bool TokenCheacking(string token, List<string> uniqeVars)
         {
-            string[] expressionSigns = { "!", "+", "*", "->", "#", ")", "(" };
+            string[] expressionSigns = { "!", "+", "*", "->", "==", ")", "(" };
             try
             {
                 if (uniqeVars.Contains(token))
@@ -102,7 +102,7 @@ namespace AOIS_2
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.Message);
                 return false;
             }
         }
@@ -119,7 +119,7 @@ namespace AOIS_2
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.Message);
                 return false;
             }
             return true;
@@ -128,7 +128,7 @@ namespace AOIS_2
         {
             if(uniqeVars.Count == 0)
             {
-                Console.WriteLine("There are no any variables in expression");
+                Console.Error.WriteLine("There are no any variables in expression");
                 return false;
             }
 

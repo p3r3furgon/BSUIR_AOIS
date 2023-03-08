@@ -3,18 +3,18 @@ using System.Linq;
 
 namespace AOIS_2
 {
-    public static class LogicCalculator
+    internal static class LogicCalculator
     {
         public static bool Calculating(List<string> tokens, List<string> vars, Dictionary<string, bool> values, Stack<string> stackSigns, Stack<bool> stackVars)
         {
-            string[] signs = { "!", "*", "+", "->", "#" };
+            string[] signs = { "!", "*", "+", "->", "==" };
             foreach (var token in tokens)
             {
                 if (vars.Contains(token))
                     stackVars.Push(values[token]);
                 else if (signs.Contains(token))
                 {
-                    while (stackSigns.Count >= 1 && Priority(stackSigns.Peek()) >= Priority(token))
+                    while (stackSigns.Count >= 1 && Priority.GetPriority(stackSigns.Peek()) >= Priority.GetPriority(token))
                         stackVars.Push(ExecuteOperation(stackVars, stackSigns.Pop()));
                     stackSigns.Push(token);
                 }
@@ -38,14 +38,17 @@ namespace AOIS_2
         {
             bool value2 = stackVars.Pop();
             bool value1 = stackVars.Pop();
-            if (sign == "*")
-                return Conjunction(value1, value2);
-            else if (sign == "+")
-                return Disjunction(value1, value2);
-            else if (sign == "->")
-                return Implication(value1, value2);
-            else
-                return Equivalence(value1, value2);
+            switch(sign)
+            {
+                case "*":
+                    return Conjunction(value1, value2);
+                case "+":
+                    return Disjunction(value1, value2);
+                case "->":
+                    return Implication(value1, value2);
+                default:
+                    return Equivalence(value1, value2);
+            }          
         }
 
         static bool ExecuteOperation(Stack<bool> stackVars, string sign)
@@ -56,21 +59,6 @@ namespace AOIS_2
                 return ExecuteBinaryOperation(stackVars, sign);
         }
 
-        static int Priority(string sign)
-        {
-            if (sign == "!")
-                return 5;
-            else if (sign == "*")
-                return 4;
-            else if (sign == "+")
-                return 3;
-            else if (sign == "->")
-                return 2;
-            else if (sign == "#")
-                return 1;
-            else
-                return 0;
-        }
         static bool Conjunction(bool x1, bool x2)
         {
             return x1 && x2;
@@ -88,10 +76,7 @@ namespace AOIS_2
 
         static bool Implication(bool x1, bool x2)
         {
-            if (x1 == true && x2 == false)
-                return false;
-            else
-                return true;
+            return !(x1 == true && x2 == false);
         }
 
         static bool Equivalence(bool x1, bool x2)

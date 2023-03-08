@@ -6,7 +6,7 @@ using Microsoft.SqlServer.Server;
 
 namespace AOIS_2
 {
-    public static class TruthTableHandler
+    internal static class TruthTableHandler
     {
         public static List<List<bool>> Permutation(int n)
         {
