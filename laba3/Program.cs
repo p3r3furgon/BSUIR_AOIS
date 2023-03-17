@@ -86,9 +86,10 @@ namespace AOIS_3
                         for (int j = 0; j < taskExpression.NumberOfVars; j++)
                             varsValues[taskExpression.UniqeVars[j]] = varsPermutation[i][j];
                         expressionResult.Add(LogicCalculator.Calculating(taskExpression.Tokens, taskExpression.UniqeVars, varsValues));
+
                     }
                     TruthTableHandler.PrintTruthTable(varsPermutation, taskExpression.UniqeVars, expressionResult);
-                    TruthTableHandler.PrintTotalResults(varsPermutation, taskExpression.UniqeVars, expressionResult);
+                    TruthTableHandler.PrintTotalResults(varsPermutation, taskExpression.UniqeVars, expressionResult, taskExpression);
                 }
                 Console.WriteLine("\n\nPress any key to continue . . .");
                 Console.ReadLine();

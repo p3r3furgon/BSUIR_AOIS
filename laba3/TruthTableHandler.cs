@@ -83,6 +83,27 @@ namespace AOIS_3
             return functionParts;
         }
 
+        public static List<List<string>> CalculatingPartsOfPDNF(LogicExpression logicExpression)
+        {
+            List<List<string>> suitableOptions = new List<List<string>>();
+            for (int i = 0; i < logicExpression.ExpressionResult.Count; i++)
+            {
+                if (logicExpression.ExpressionResult[i])
+                {
+                    List<string> combination = new List<string>();
+                    for(int j = 0;  j < logicExpression.VarsPermutations[i].Count; j++)
+                    {
+                        if (logicExpression.VarsPermutations[i][j])
+                            combination.Add(logicExpression.UniqeVars[j]);
+                        else
+                            combination.Add("!" + logicExpression.UniqeVars[j]);
+                    }
+                    suitableOptions.Add(combination);
+                }
+            }
+            return suitableOptions;
+        }
+
         public static void PrintPDNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResult)
         {
             Console.WriteLine("Principal disjunction normal form:");
@@ -236,10 +257,12 @@ namespace AOIS_3
             return index;
         }
 
-        public static void ShowPDNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults)
+        public static void ShowPDNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults, LogicExpression logicExpression)
         {
             PrintPDNF(truthTable, vars, expressionResults);
             PrintNumericInterpretationOfPDNF(truthTable, expressionResults);
+            FunctionMinimizationHandler.PrintRDNF(logicExpression); 
+
         }
 
         public static void ShowPCNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults)
@@ -248,9 +271,9 @@ namespace AOIS_3
             PrintNumericInterpretationOfPCNF(truthTable, expressionResults);           
         }
 
-        public static void PrintTotalResults(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults)
+        public static void PrintTotalResults(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults, LogicExpression logicExpression)
         {
-            ShowPDNF(truthTable, vars, expressionResults);
+            ShowPDNF(truthTable, vars, expressionResults, logicExpression);
             Console.WriteLine();
             ShowPCNF(truthTable, vars, expressionResults);
             Console.WriteLine("Index form: " + IndexInterpretation(expressionResults));

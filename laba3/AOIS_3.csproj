@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExpressionHandler.cs" />
+    <Compile Include="FunctionMinimizationHandler.cs" />
     <Compile Include="LogicCalculator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

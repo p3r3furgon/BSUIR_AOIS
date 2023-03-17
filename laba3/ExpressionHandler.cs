@@ -18,12 +18,15 @@ namespace AOIS_3
             NumberOfVars = UniqeVars.Count;
             VarsValues = new Dictionary<string, bool>();
             Tokens = DividingExpressionOnTokens(Expression, AllVars);
+            VarsPermutations = TruthTableHandler.Permutation(NumberOfVars);
+            ExpressionResult = CalculatingExpressionResults(NumberOfVars, VarsValues, UniqeVars, Tokens, VarsPermutations);
         }
 
         public string Expression { get; set; }
         public List<string> UniqeVars { get; }
         public int NumberOfVars { get; }
         public Dictionary<string, bool> VarsValues { get; }
+        public List<List<bool>> VarsPermutations { get; }
         public List<string> AllVars { get; }
         public List<string> Tokens { get; }
         public List<bool> ExpressionResult { get; }
