@@ -4,7 +4,7 @@ using System;
 using System.Text;
 using Microsoft.SqlServer.Server;
 
-namespace AOIS_3
+namespace AOIS_4
 {
 
     internal static class TruthTableHandler
@@ -81,6 +81,9 @@ namespace AOIS_3
                 functionParts.Add(functionPart.ToString());
             }
             return functionParts;
+
+
+
         }
 
         public static List<List<string>> CalculatingPartsOfPDNF(LogicalExpression logicExpression)
@@ -144,6 +147,27 @@ namespace AOIS_3
                 functionParts.Add(functionPart.ToString());
             }
             return functionParts;
+        }
+
+        public static List<List<string>> CalculatingPartsOfPCNF(LogicalExpression logicExpression)
+        {
+            List<List<string>> suitableOptions = new List<List<string>>();
+            for (int i = 0; i < logicExpression.ExpressionResult.Count; i++)
+            {
+                if (!logicExpression.ExpressionResult[i])
+                {
+                    List<string> combination = new List<string>();
+                    for (int j = 0; j < logicExpression.VarsPermutations[i].Count; j++)
+                    {
+                        if (!logicExpression.VarsPermutations[i][j])
+                            combination.Add(logicExpression.UniqeVars[j]);
+                        else
+                            combination.Add("!" + logicExpression.UniqeVars[j]);
+                    }
+                    suitableOptions.Add(combination);
+                }
+            }
+            return suitableOptions;
         }
 
         public static void PrintPCNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResult)

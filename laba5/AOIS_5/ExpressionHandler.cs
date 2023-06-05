@@ -6,7 +6,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AOIS_3
+namespace AOIS_4
 {
     public class LogicalExpression
     {
@@ -21,6 +21,15 @@ namespace AOIS_3
             Tokens = DividingExpressionOnTokens(Expression, AllVars);
             VarsPermutations = TruthTableHandler.Permutation(NumberOfVars);
             ExpressionResult = CalculatingExpressionResults(NumberOfVars, VarsValues, UniqeVars, Tokens, VarsPermutations);
+        }
+
+        public LogicalExpression(List<List<bool>> permutations, List<string> inputVars, List<bool> expressionResult)
+        {
+            AllVars = inputVars;
+            UniqeVars = CountingUniqeVariablesInExpression(AllVars);
+            NumberOfVars = UniqeVars.Count;
+            VarsPermutations = permutations;
+            ExpressionResult = expressionResult;
         }
 
         public string Expression { get; set; }

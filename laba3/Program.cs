@@ -76,7 +76,7 @@ namespace AOIS_3
                         Environment.Exit(0);
                         break;
                 }
-                LogicExpression taskExpression = new LogicExpression(expression);
+                LogicalExpression taskExpression = new LogicalExpression(expression);
                 int numberOfPermutations = (int)Math.Pow(2, taskExpression.NumberOfVars);
                 List<List<bool>> varsPermutation = TruthTableHandler.Permutation(taskExpression.NumberOfVars);
                 if (ExpressionHandler.IsExpressionCorrect(taskExpression.Expression, taskExpression.Tokens, taskExpression.UniqeVars))
@@ -90,7 +90,7 @@ namespace AOIS_3
                     }
                     TruthTableHandler.PrintTruthTable(varsPermutation, taskExpression.UniqeVars, expressionResult);
                     TruthTableHandler.PrintTotalResults(varsPermutation, taskExpression.UniqeVars, expressionResult, taskExpression);
-                    FunctionMinimizationHandler.PrintDDNF(taskExpression);
+                    FunctionMinimizationHandler.PrintMDNF(taskExpression);
                 }
                 Console.WriteLine("\n\nPress any key to continue . . .");
                 Console.ReadLine();

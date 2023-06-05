@@ -256,27 +256,5 @@ namespace AOIS_3
             }
             return index;
         }
-
-        public static void ShowPDNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults, LogicalExpression logicExpression)
-        {
-            PrintPDNF(truthTable, vars, expressionResults);
-            PrintNumericInterpretationOfPDNF(truthTable, expressionResults);
-            FunctionMinimizationHandler.PrintRDNF(logicExpression); 
-
-        }
-
-        public static void ShowPCNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults)
-        {
-            PrintPCNF(truthTable, vars, expressionResults);
-            PrintNumericInterpretationOfPCNF(truthTable, expressionResults);           
-        }
-
-        public static void PrintTotalResults(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults, LogicalExpression logicExpression)
-        {
-            ShowPDNF(truthTable, vars, expressionResults, logicExpression);
-            Console.WriteLine();
-            ShowPCNF(truthTable, vars, expressionResults);
-            Console.WriteLine("Index form: " + IndexInterpretation(expressionResults));
-        }
     }
 }
