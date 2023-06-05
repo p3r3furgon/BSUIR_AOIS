@@ -1,4 +1,7 @@
 bin/
 obj/
+Properties/
 .vs/
 *.sln
+*.csproj
+*.config
