@@ -1,4 +1,5 @@
-﻿using AOIS_3;
+﻿using AOIS_8;
+using AOIS_3;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,19 @@ namespace AOIS_7
         private int _tableSize;
         private int _wordLength;
         private List<string> _table;
+        private List<string> _memory;
 
         public AssociativeProcessor(int tableSize, int wordLength)
         {
             _tableSize = tableSize;
             _wordLength = wordLength;
             _table = FillTable(tableSize, wordLength);
+            _memory = new List<string>();
+        }
+
+        public AssociativeProcessor(int tableSize, int wordLength, List<string> memory) : this(tableSize, wordLength)
+        {
+            _memory = memory;
         }
 
         private List<string> FillTable(int tableSize, int wordLength)
@@ -57,7 +65,7 @@ namespace AOIS_7
             return new { GFlag = prevGFlag, LFlag = prevLFlag };
         }
 
-        private int CompareWords(string memoryWord, string searchWord)
+        public int CompareWords(string memoryWord, string searchWord)
         {
             dynamic comparisonFlags = ComparisonFlags(memoryWord, searchWord);
             if (!comparisonFlags.GFlag && !comparisonFlags.LFlag)
@@ -105,6 +113,7 @@ namespace AOIS_7
                     result = lowerValues[i];
             return result;
         }
+
 
         public void BooleanFunctionSearch(LogicalExpression expression)
         {

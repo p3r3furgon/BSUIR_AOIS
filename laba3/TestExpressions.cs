@@ -10,6 +10,7 @@ namespace AOIS_3
     {
         static string[] testExpressions =
         {
+            "(a+b+!c)*(a+!b)",
             "((x1+x2)*x3*(x4+x2))",
             "!(((!x1)+(!x2))*(!((!x2)*(!x3))))",
             "(p*(q+r))",

@@ -58,8 +58,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="KarnaughMapHandler.cs" />
     <Compile Include="ExpressionHandler.cs" />
     <Compile Include="FunctionMinimizationHandler.cs" />
+    <Compile Include="KarnaughMapBuilder.cs" />
     <Compile Include="LogicCalculator.cs" />
     <Compile Include="PermutationsHandler.cs" />
     <Compile Include="Program.cs" />

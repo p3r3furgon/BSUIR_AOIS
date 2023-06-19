@@ -6,6 +6,7 @@ using System.Data.SqlTypes;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,6 +17,7 @@ namespace AOIS_3
         static List<List<string>> CalculatingPartsOfRDNF(LogicalExpression logicExpression)
         {
             List<List<string>> partsOfPDNF = TruthTableHandler.CalculatingPartsOfPDNF(logicExpression);
+            List<List<string>> partsOfPCNF = TruthTableHandler.CalculatingPartsOfPCNF(logicExpression);
             List<List<string>> singleParts = new List<List<string>>();
             while (CountingNumberOfVars(partsOfPDNF[0]) > 1)
             {
@@ -37,15 +39,39 @@ namespace AOIS_3
             return result;
         }
 
+        static List<List<string>> CalculatingPartsOfRCNF(LogicalExpression logicExpression)
+        {
+            List<List<string>> partsOfPCNF = TruthTableHandler.CalculatingPartsOfPCNF(logicExpression);
+            List<List<string>> singleParts = new List<List<string>>();
+            while (CountingNumberOfVars(partsOfPCNF[0]) > 1)
+            {
+                List<List<string>> reducedParts = new List<List<string>>();
+                for (int i = 0; i < partsOfPCNF.Count; i++)
+                    Check(i, reducedParts, partsOfPCNF, singleParts);
+                partsOfPCNF = reducedParts;
+                if (reducedParts.Count == 0)
+                    break;
+            }
+            List<List<string>> result = new List<List<string>>();
+            for (int i = 0; i < partsOfPCNF.Count; i++)
+            {
+                if (!IsMatch(result, partsOfPCNF[i]))
+                    result.Add(partsOfPCNF[i]);
+            }
+            for (int i = 0; i < singleParts.Count; i++)
+                result.Add(singleParts[i]);
+            return result;
+        }
+
         static bool IsMatch(List<List<string>> result, List<string> partOfPDNF)
         {
             bool flag;
             if (result.Count == 0)
                 return false;
-            for(int i = 0; i < result.Count; i++)
+            for (int i = 0; i < result.Count; i++)
             {
                 flag = true;
-                for(int j = 0; j < result[i].Count; j++)
+                for (int j = 0; j < result[i].Count; j++)
                 {
                     if (result[i][j] != partOfPDNF[j])
                         flag = false;
@@ -61,7 +87,7 @@ namespace AOIS_3
             int numOfInverseVars = 0;
             for (int i = 0; i < thisCombination.Count; i++)
             {
-                if (thisCombination[i] == otherCombination[i]){}
+                if (thisCombination[i] == otherCombination[i]) { }
                 else if (!thisCombination[i].Contains(otherCombination[i]) && !otherCombination[i].Contains(thisCombination[i]))
                     return false;
                 else
@@ -77,9 +103,9 @@ namespace AOIS_3
         static void Check(int index, List<List<string>> result, List<List<string>> reduceParts, List<List<string>> singleParts)
         {
             bool hasNeighbours = false;
-            for (int j = 0; j < reduceParts.Count; j++) 
+            for (int j = 0; j < reduceParts.Count; j++)
             {
-                if (Comparing(reduceParts[index], reduceParts[j]) && index != j) 
+                if (Comparing(reduceParts[index], reduceParts[j]) && index != j)
                 {
                     List<string> reducedCombination = new List<string>();
                     foreach (var variable in reduceParts[index])
@@ -104,7 +130,7 @@ namespace AOIS_3
         static int CountingNumberOfVars(List<string> combination)
         {
             int count = 0;
-            foreach(var variable in combination)
+            foreach (var variable in combination)
             {
                 if (variable != "(-)")
                     count++;
@@ -123,8 +149,8 @@ namespace AOIS_3
                 {
                     if (variable[0] == '!')
                         part += "(" + variable + ")*";
-                    else if(variable != "(-)")
-                        part += variable + "*";                     
+                    else if (variable != "(-)")
+                        part += variable + "*";
                 }
                 part = part.Remove(part.Length - 1, 1);
                 part += ")";
@@ -158,12 +184,33 @@ namespace AOIS_3
             return RDNF;
         }
 
-        static List<List<bool>> GetQuineTable(LogicalExpression expression)
+        static List<string> GetRCNF(LogicalExpression logicExpression)
+        {
+            var RCNFParts = CalculatingPartsOfRCNF(logicExpression);
+            List<string> RCNF = new List<string>();
+            foreach (var RCNFPart in RCNFParts)
+            {
+                string part = "(";
+                foreach (var variable in RCNFPart)
+                {
+                    if (variable[0] == '!')
+                        part += "(" + variable + ")*";
+                    else if (variable != "(-)")
+                        part += variable + "*";
+                }
+                part = part.Remove(part.Length - 1, 1);
+                part += ")";
+                RCNF.Add(part);
+            }
+            return RCNF;
+        }
+
+        static List<List<bool>> GetQuineTable(LogicalExpression expression, bool isPDNF)
         {
             List<List<bool>> table = new List<List<bool>>();
-            List<List<string>> reducedTerms = CalculatingPartsOfRDNF(expression);
-            List<List<string>> fullTerms = TruthTableHandler.CalculatingPartsOfPDNF(expression);
-            for(int i = 0; i < reducedTerms.Count; i++)
+            List<List<string>> reducedTerms = isPDNF ? CalculatingPartsOfRDNF(expression) : CalculatingPartsOfRCNF(expression);
+            List<List<string>> fullTerms = isPDNF ? TruthTableHandler.CalculatingPartsOfPDNF(expression) : TruthTableHandler.CalculatingPartsOfPCNF(expression);
+            for (int i = 0; i < reducedTerms.Count; i++)
             {
                 List<bool> tableRow = new List<bool>();
                 for (int j = 0; j < fullTerms.Count; j++)
@@ -173,15 +220,15 @@ namespace AOIS_3
             return table;
         }
 
-        public static void PrintQuineTable(LogicalExpression expression)
+        public static void PrintQuineTable(LogicalExpression expression, bool isPDNF)
         {
-            List<List<bool>> table = GetQuineTable(expression);
-            List<List<string>> reducedTerms = CalculatingPartsOfRDNF(expression);
-            List<List<string>> fullTerms = TruthTableHandler.CalculatingPartsOfPDNF(expression);
+            List<List<bool>> table = GetQuineTable(expression, isPDNF);
+            List<List<string>> reducedTerms = isPDNF ? CalculatingPartsOfRDNF(expression) : CalculatingPartsOfRCNF(expression);
+            List<List<string>> fullTerms = isPDNF ? TruthTableHandler.CalculatingPartsOfPDNF(expression) : TruthTableHandler.CalculatingPartsOfPCNF(expression);
             Console.Write("\t");
             for (int i = 0; i < fullTerms.Count; i++)
                 Console.Write(fullTerms[i] + "\t");
-            for(int i = 0; i < reducedTerms.Count; i++)
+            for (int i = 0; i < reducedTerms.Count; i++)
             {
                 Console.Write(reducedTerms[i] + "\t");
                 for (int j = 0; j < table[i].Count; j++)
@@ -191,7 +238,7 @@ namespace AOIS_3
 
         static bool IsContain(List<string> reducedTerms, List<string> fullTerms)
         {
-            for(int i = 0; i < fullTerms.Count; i++)
+            for (int i = 0; i < fullTerms.Count; i++)
             {
                 if (reducedTerms[i] != fullTerms[i] && reducedTerms[i] != "(-)")
                     return false;
@@ -199,14 +246,14 @@ namespace AOIS_3
             return true;
         }
 
-        static List<List<string>> GetCoreTerms(LogicalExpression expression)
+        static List<List<string>> GetCoreTerms(LogicalExpression expression, bool isPDNF)
         {
             List<List<string>> coreTerms = new List<List<string>>();
-            List<List<bool>> table = GetQuineTable(expression);
-            List<List<string>> reducedTerms = CalculatingPartsOfRDNF(expression);
+            List<List<bool>> table = GetQuineTable(expression, isPDNF);
+            List<List<string>> reducedTerms = isPDNF ? CalculatingPartsOfRDNF(expression) : CalculatingPartsOfRCNF(expression);
             for (int i = 0; i < table[0].Count; i++)
             {
-                int countOfTruth = 0, truthIndex =  0;
+                int countOfTruth = 0, truthIndex = 0;
                 for (int j = 0; j < table.Count; j++)
                     if (table[j][i])
                     {
@@ -219,11 +266,11 @@ namespace AOIS_3
             return coreTerms;
         }
 
-        static List<string> GetStringMDNF(LogicalExpression expression)
+        static List<string> GetStringMDNFterms(LogicalExpression expression)
         {
-            List<List<string>> coreTerms = GetCoreTerms(expression);
-            List<List<string>> addictiveTerms = GetAddictiveTerms(expression);
-            foreach(var term in addictiveTerms)
+            List<List<string>> coreTerms = GetCoreTerms(expression, true);
+            List<List<string>> addictiveTerms = GetAddictiveTerms(expression, true);
+            foreach (var term in addictiveTerms)
             {
                 coreTerms.Add(term);
             }
@@ -233,9 +280,7 @@ namespace AOIS_3
                 string strTerm = "(";
                 foreach (var variable in coreTerms[i])
                 {
-                    if (variable[0] == '!')
-                        strTerm += "(" + variable + ")*";
-                    else if (variable != "(-)")
+                    if (variable != "(-)")
                         strTerm += variable + "*";
                 }
                 strTerm = strTerm.TrimEnd('*').Insert(strTerm.Length - 1, ")");
@@ -244,9 +289,32 @@ namespace AOIS_3
             return strTerms;
         }
 
+        static List<string> GetStringMCNFterms(LogicalExpression expression)
+        {
+            List<List<string>> coreTerms = GetCoreTerms(expression, false);
+            List<List<string>> addictiveTerms = GetAddictiveTerms(expression, false);
+            foreach (var term in addictiveTerms)
+            {
+                coreTerms.Add(term);
+            }
+            List<string> strTerms = new List<string>();
+            for (int i = 0; i < coreTerms.Count; i++)
+            {
+                string strTerm = "(";
+                foreach (var variable in coreTerms[i])
+                {
+                    if (variable != "(-)")
+                        strTerm += variable + "+";
+                }
+                strTerm = strTerm.TrimEnd('+').Insert(strTerm.Length - 1, ")");
+                strTerms.Add(strTerm);
+            }
+            return strTerms;
+        }
+
         public static void PrintMDNF(LogicalExpression expression)
         {
-            List<string> strTerms = GetStringMDNF(expression);
+            List<string> strTerms = GetStringMDNFterms(expression);
             List<string> necessaryImplicants = CheckingImplicants(expression);
 
             if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == (int)Math.Pow(2, (int)(Math.Pow(2, expression.NumberOfVars))) - 1)
@@ -256,21 +324,71 @@ namespace AOIS_3
             else
             {
                 string MDNF1 = strTerms[0];
-                string MDNF2 = necessaryImplicants[0];
-                for (int i = 1; i < necessaryImplicants.Count; i++)
-                    MDNF2 += "+" + necessaryImplicants[i];
                 for (int i = 1; i < strTerms.Count; i++)
                     MDNF1 += "+" + strTerms[i];
-                Console.WriteLine("Minimized disjunctive normal form (Calculating-tabular method):\n" + MDNF1);
-                Console.WriteLine("Minimized disjunctive normal form (Calculating method):\n" + MDNF2);
+                Console.WriteLine("Minimized disjunctive normal form (calculating-tabular method):\n" + MDNF1);
             }
         }
 
-        static List<int> GetIndexesOfPureCols(LogicalExpression expression)
+        public static void PrintMCNF(LogicalExpression expression)
         {
-            List<List<string>> coreTerms = GetCoreTerms(expression);
-            List<List<string>> reduceTerms = CalculatingPartsOfRDNF(expression);
-            List<List<bool>> table = GetQuineTable(expression);
+            List<string> strTerms = GetStringMCNFterms(expression);
+            List<string> necessaryImplicants = CheckingImplicants(expression);
+
+            if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == (int)Math.Pow(2, (int)(Math.Pow(2, expression.NumberOfVars))) - 1)
+                Console.WriteLine("MCNF = 1 ");
+            else if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == 0)
+                Console.WriteLine("Doesn't exist");
+            else
+            {
+                string MCNF1 = strTerms[0];
+                for (int i = 1; i < strTerms.Count; i++)
+                    MCNF1 += "*" + strTerms[i];
+                Console.WriteLine("Minimized conjunctive normal form (calculating-tabular method):\n" + MCNF1);
+            }
+        }
+
+        public static string GetStringMDNF(LogicalExpression expression)
+        {
+            List<string> strTerms = GetStringMDNFterms(expression);
+            List<string> necessaryImplicants = CheckingImplicants(expression);
+
+            if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == (int)Math.Pow(2, (int)(Math.Pow(2, expression.NumberOfVars))) - 1)
+                return null;
+            else if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == 0)
+                return null;
+            else
+            {
+                string MDNF1 = strTerms[0];
+                for (int i = 1; i < strTerms.Count; i++)
+                    MDNF1 += "+" + strTerms[i];
+                return MDNF1;
+            }
+        }
+
+        public static string GetStringMCNF(LogicalExpression expression)
+        {
+            List<string> strTerms = GetStringMCNFterms(expression);
+            List<string> necessaryImplicants = CheckingImplicants(expression);
+
+            if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == (int)Math.Pow(2, (int)(Math.Pow(2, expression.NumberOfVars))) - 1)
+                return null;
+            else if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == 0)
+                return null;
+            else
+            {
+                string MCNF1 = strTerms[0];
+                for (int i = 1; i < strTerms.Count; i++)
+                    MCNF1 += "*" + strTerms[i];
+                return MCNF1;
+            }
+        }
+
+        static List<int> GetIndexesOfPureCols(LogicalExpression expression, bool isPDNF)
+        {
+            List<List<string>> coreTerms = GetCoreTerms(expression, isPDNF);
+            List<List<string>> reduceTerms = isPDNF ? CalculatingPartsOfRDNF(expression) : CalculatingPartsOfRCNF(expression);
+            List<List<bool>> table = GetQuineTable(expression, isPDNF);
             List<int> coverCols = new List<int>();
             List<int> pureCols = new List<int>();
 
@@ -315,9 +433,9 @@ namespace AOIS_3
 
         static bool IsInCoreTerms(List<List<string>> coreTerms, List<string> term)
         {
-            foreach(var coreTerm in coreTerms)
+            foreach (var coreTerm in coreTerms)
             {
-                for(int i = 0; i < coreTerm.Count; i++)
+                for (int i = 0; i < coreTerm.Count; i++)
                 {
                     if (term[i] != coreTerm[i])
                         break;
@@ -328,15 +446,15 @@ namespace AOIS_3
             return false;
         }
 
-        static List<List<string>> GetAddictiveTerms(LogicalExpression expression)
+        static List<List<string>> GetAddictiveTerms(LogicalExpression expression, bool isPDNF)
         {
-            List<int> pureColsIndexes = GetIndexesOfPureCols(expression);
+            List<int> pureColsIndexes = GetIndexesOfPureCols(expression, isPDNF);
             List<List<string>> addictiveTerms = new List<List<string>>();
             if (pureColsIndexes.Count > 0)
             {
-                List<List<bool>> table = GetQuineTable(expression);
-                List<List<string>> reducedTerms = CalculatingPartsOfRDNF(expression);
-                List<List<string>> coreTerms = GetCoreTerms(expression);
+                List<List<bool>> table = GetQuineTable(expression, isPDNF);
+                List<List<string>> reducedTerms = isPDNF ? CalculatingPartsOfRDNF(expression) : CalculatingPartsOfRCNF(expression);
+                List<List<string>> coreTerms = GetCoreTerms(expression, isPDNF);
                 Dictionary<int, List<int>> coveredColsIndexes = new Dictionary<int, List<int>>();
                 int k = 1;
                 List<int> indexes = new List<int>();
@@ -393,20 +511,20 @@ namespace AOIS_3
 
         static bool IsEveryColCovered(List<int> pureColsIndexes, List<int> combinedCoveredColsIndexes)
         {
-            foreach(var index in pureColsIndexes)
+            foreach (var index in pureColsIndexes)
             {
                 if (!combinedCoveredColsIndexes.Contains(index))
                     return false;
             }
             return true;
         }
-        
+
         public static List<string> CheckingImplicants(LogicalExpression expression)
         {
             List<string> necessaryImplicants = new List<string>();
             List<string> terms = GetRDNF(expression);
             string reducedForm = terms[0];
-            for(int i = 1; i < terms.Count; i++)
+            for (int i = 1; i < terms.Count; i++)
             {
                 reducedForm += "+" + terms[i];
             }
@@ -435,3 +553,4 @@ namespace AOIS_3
         }
     }
 }
+

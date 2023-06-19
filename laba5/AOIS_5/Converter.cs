@@ -11,11 +11,11 @@ namespace AOIS_5
 {
     internal class Converter
     {
-        static string[] inpPreTactNames = { "q01", "q02", "q03", "q04" };
-        static string[] inpPostTactNames = { "q11", "q12", "q13", "q14" };
-        static string[] triggerNames = { "h1", "h2", "h3", "h4" };
+        static string[] inpPreTactNames = { "q01", "q02", "q03"};
+        static string[] inpPostTactNames = { "q11", "q12", "q13"};
+        static string[] triggerNames = { "h1", "h2", "h3"};
         static string fsmName = "V";
-        const int numOfElements = 5;
+        const int numOfElements = 4;
 
         public static List<int> BinaryValueParse(string binaryValue)
         {
@@ -32,17 +32,17 @@ namespace AOIS_5
             foreach(var permutation in permutations)
             {
                 string preTactValue = permutation[0].ToString() + permutation[1].ToString() + permutation[2].ToString() + permutation[3].ToString();
-                string fsmValue = permutation[4].ToString();
+                string fsmValue = permutation[3].ToString();
                 int intPostTactValue = BinaryDecimalConverter.ConvertPositiveBinaryValue(preTactValue) 
                     - BinaryDecimalConverter.ConvertPositiveBinaryValue(fsmValue);
                 string strPostTactValue = "";
                 if (intPostTactValue == -1)
                 {
-                    strPostTactValue = BinaryDecimalConverter.ConvertToBinary(15, 4); ;
+                    strPostTactValue = BinaryDecimalConverter.ConvertToBinary(15, 3); ;
                 }
                 else
                 {
-                    strPostTactValue = BinaryDecimalConverter.ConvertToBinary(intPostTactValue, 4);
+                    strPostTactValue = BinaryDecimalConverter.ConvertToBinary(intPostTactValue, 3);
                 }
                 var postTactRow = BinaryValueParse(strPostTactValue);
                 postTactTable.Add(postTactRow);
@@ -101,12 +101,12 @@ namespace AOIS_5
             var permutations = BuildIntTablePermutations();
             var postTactTable = BuildPostTactTable();
             var excitationTable = BuildEcxitationTable();
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
                 Console.Write(inpPreTactNames[i] + "\t");
             Console.Write(fsmName + "\t");
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
                 Console.Write(inpPostTactNames[i] + "\t");
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
                 Console.Write(triggerNames[i] + "\t");
             Console.WriteLine();
             for (int i = 0; i < permutations.Count; i++)
@@ -131,7 +131,7 @@ namespace AOIS_5
         public static void FindMinFormula()
         {
             var excitationTable = BuildEcxitationTable();
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
             {
                 var MDNF = ShortestMDNF(i, ToBoolList(excitationTable));
                 var MCNF = ShortestMCNF(i, ToBoolList(excitationTable));

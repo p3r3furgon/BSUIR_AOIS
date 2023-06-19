@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using System;
 using System.Text;
 using Microsoft.SqlServer.Server;
-using AOIS_3;
 
 namespace AOIS_3
 {
@@ -81,9 +81,6 @@ namespace AOIS_3
                 functionParts.Add(functionPart.ToString());
             }
             return functionParts;
-
-
-
         }
 
         public static List<List<string>> CalculatingPartsOfPDNF(LogicalExpression logicExpression)
@@ -94,7 +91,7 @@ namespace AOIS_3
                 if (logicExpression.ExpressionResult[i])
                 {
                     List<string> combination = new List<string>();
-                    for (int j = 0; j < logicExpression.VarsPermutations[i].Count; j++)
+                    for(int j = 0;  j < logicExpression.VarsPermutations[i].Count; j++)
                     {
                         if (logicExpression.VarsPermutations[i][j])
                             combination.Add(logicExpression.UniqeVars[j]);
@@ -149,27 +146,6 @@ namespace AOIS_3
             return functionParts;
         }
 
-        public static List<List<string>> CalculatingPartsOfPCNF(LogicalExpression logicExpression)
-        {
-            List<List<string>> suitableOptions = new List<List<string>>();
-            for (int i = 0; i < logicExpression.ExpressionResult.Count; i++)
-            {
-                if (!logicExpression.ExpressionResult[i])
-                {
-                    List<string> combination = new List<string>();
-                    for (int j = 0; j < logicExpression.VarsPermutations[i].Count; j++)
-                    {
-                        if (!logicExpression.VarsPermutations[i][j])
-                            combination.Add(logicExpression.UniqeVars[j]);
-                        else
-                            combination.Add("!" + logicExpression.UniqeVars[j]);
-                    }
-                    suitableOptions.Add(combination);
-                }
-            }
-            return suitableOptions;
-        }
-
         public static void PrintPCNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResult)
         {
             StringBuilder disjuctionFunction = new StringBuilder();
@@ -218,7 +194,7 @@ namespace AOIS_3
                         binaryValue += "0";
                 }
                 results.Add(FromBinaryToInt(binaryValue));
-            }
+            }           
             return results;
         }
 
@@ -276,31 +252,9 @@ namespace AOIS_3
             for (int i = 0; i < expressionResults.Count; i++)
             {
                 if (expressionResults[i])
-                    index += (int)Math.Pow(2, expressionResults.Count - 1 - i);
+                    index += (int)Math.Pow(2, expressionResults.Count-1-i); 
             }
             return index;
-        }
-
-        public static void ShowPDNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults, LogicalExpression logicExpression)
-        {
-            PrintPDNF(truthTable, vars, expressionResults);
-            PrintNumericInterpretationOfPDNF(truthTable, expressionResults);
-            FunctionMinimizationHandler.PrintRDNF(logicExpression);
-
-        }
-
-        public static void ShowPCNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults)
-        {
-            PrintPCNF(truthTable, vars, expressionResults);
-            PrintNumericInterpretationOfPCNF(truthTable, expressionResults);
-        }
-
-        public static void PrintTotalResults(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults, LogicalExpression logicExpression)
-        {
-            ShowPDNF(truthTable, vars, expressionResults, logicExpression);
-            Console.WriteLine();
-            ShowPCNF(truthTable, vars, expressionResults);
-            Console.WriteLine("Index form: " + IndexInterpretation(expressionResults));
         }
     }
 }

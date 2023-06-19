@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +11,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using static AOIS_3.KarnaughMapHandler;
 
 namespace AOIS_3
 {
@@ -61,7 +63,7 @@ namespace AOIS_3
                             {
                                 expressionChoice = int.Parse(Console.ReadLine());
                             }
-                            catch(Exception)
+                            catch (Exception)
                             {
                                 expressionChoice = 0;
                             }
@@ -92,6 +94,8 @@ namespace AOIS_3
                     TruthTableHandler.PrintTotalResults(varsPermutation, taskExpression.UniqeVars, expressionResult, taskExpression);
                     FunctionMinimizationHandler.PrintMDNF(taskExpression);
                 }
+                KarnaughMapSolver.MinimizeWithKarnaughMap(taskExpression, true);
+                KarnaughMapSolver.MinimizeWithKarnaughMap(taskExpression, false);
                 Console.WriteLine("\n\nPress any key to continue . . .");
                 Console.ReadLine();
             }
