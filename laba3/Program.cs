@@ -92,10 +92,10 @@ namespace AOIS_3
                     }
                     TruthTableHandler.PrintTruthTable(varsPermutation, taskExpression.UniqeVars, expressionResult);
                     TruthTableHandler.PrintTotalResults(varsPermutation, taskExpression.UniqeVars, expressionResult, taskExpression);
+
                     FunctionMinimizationHandler.PrintMDNF(taskExpression);
+                    FunctionMinimizationHandler.PrintMCNF(taskExpression);
                 }
-                KarnaughMapSolver.MinimizeWithKarnaughMap(taskExpression, true);
-                KarnaughMapSolver.MinimizeWithKarnaughMap(taskExpression, false);
                 Console.WriteLine("\n\nPress any key to continue . . .");
                 Console.ReadLine();
             }

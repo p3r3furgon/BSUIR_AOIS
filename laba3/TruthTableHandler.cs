@@ -289,18 +289,20 @@ namespace AOIS_3
 
         }
 
-        public static void ShowPCNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults)
+        public static void ShowPCNF(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults, LogicalExpression logicExpression)
         {
             PrintPCNF(truthTable, vars, expressionResults);
             PrintNumericInterpretationOfPCNF(truthTable, expressionResults);
+            FunctionMinimizationHandler.PrintRCNF(logicExpression);
         }
 
         public static void PrintTotalResults(List<List<bool>> truthTable, List<string> vars, List<bool> expressionResults, LogicalExpression logicExpression)
         {
             ShowPDNF(truthTable, vars, expressionResults, logicExpression);
             Console.WriteLine();
-            ShowPCNF(truthTable, vars, expressionResults);
-            Console.WriteLine("Index form: " + IndexInterpretation(expressionResults));
+            ShowPCNF(truthTable, vars, expressionResults, logicExpression);
+
+            Console.WriteLine("\nIndex form: " + IndexInterpretation(expressionResults));
         }
     }
 }

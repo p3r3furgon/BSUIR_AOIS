@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using static AOIS_3.KarnaughMapHandler;
 
 namespace AOIS_3
 {
@@ -163,6 +164,31 @@ namespace AOIS_3
             Console.WriteLine();
         }
 
+        public static void PrintRCNF(LogicalExpression logicExpression)
+        {
+            var RDNFParts = CalculatingPartsOfRCNF(logicExpression);
+            List<string> strings = new List<string>();
+            foreach (var RDNFPart in RDNFParts)
+            {
+                string part = "(";
+                foreach (var variable in RDNFPart)
+                {
+                    if (variable[0] == '!')
+                        part += "(" + variable + ")+";
+                    else if (variable != "(-)")
+                        part += variable + "+";
+                }
+                part = part.Remove(part.Length - 1, 1);
+                part += ")";
+                strings.Add(part);
+            }
+            Console.WriteLine("Reduced conjunction normal form:\n");
+            Console.Write(strings[0]);
+            for (int i = 1; i < strings.Count; i++)
+                Console.Write("*" + strings[i]);
+            Console.WriteLine();
+        }
+
         static List<string> GetRDNF(LogicalExpression logicExpression)
         {
             var RDNFParts = CalculatingPartsOfRDNF(logicExpression);
@@ -227,13 +253,16 @@ namespace AOIS_3
             List<List<string>> fullTerms = isPDNF ? TruthTableHandler.CalculatingPartsOfPDNF(expression) : TruthTableHandler.CalculatingPartsOfPCNF(expression);
             Console.Write("\t");
             for (int i = 0; i < fullTerms.Count; i++)
-                Console.Write(fullTerms[i] + "\t");
+                Console.Write(string.Join("",fullTerms[i]) + "\t");
+            Console.WriteLine();
             for (int i = 0; i < reducedTerms.Count; i++)
             {
-                Console.Write(reducedTerms[i] + "\t");
+                Console.Write(string.Join("",reducedTerms[i]) + "\t");
                 for (int j = 0; j < table[i].Count; j++)
                     Console.Write(table[i][j] ? "+\t" : "\t");
+                Console.WriteLine();
             }
+
         }
 
         static bool IsContain(List<string> reducedTerms, List<string> fullTerms)
@@ -314,8 +343,9 @@ namespace AOIS_3
 
         public static void PrintMDNF(LogicalExpression expression)
         {
+            Console.WriteLine("\n------MINIMIZED DISJUNCTIVE NORMAL FORM-------\n");
             List<string> strTerms = GetStringMDNFterms(expression);
-            List<string> necessaryImplicants = CheckingImplicants(expression);
+            List<string> necessaryImplicants = CheckingImplicants(expression, true);
 
             if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == (int)Math.Pow(2, (int)(Math.Pow(2, expression.NumberOfVars))) - 1)
                 Console.WriteLine("MDNF = 1 ");
@@ -323,35 +353,57 @@ namespace AOIS_3
                 Console.WriteLine("Doesn't exist");
             else
             {
+                string MDNF = necessaryImplicants[0];
+                for (int i = 1; i < necessaryImplicants.Count; i++)
+                    MDNF += "*" + necessaryImplicants[i];
+
                 string MDNF1 = strTerms[0];
                 for (int i = 1; i < strTerms.Count; i++)
                     MDNF1 += "+" + strTerms[i];
-                Console.WriteLine("Minimized disjunctive normal form (calculating-tabular method):\n" + MDNF1);
+                Console.WriteLine("\nMinimized disjunctive normal form (CALCULATING METHOD):\n" + MDNF);
+                Console.WriteLine("Minimized disjunctive normal form (CALCULATING-TABULAR METHOD):");
+                Console.WriteLine("\nQuine table for PDNF\n");
+                PrintQuineTable(expression, true);
+                Console.WriteLine("\nResult: " + MDNF1);
+                Console.WriteLine("Minimized disjunctive normal form (TABULAR METHOD):\n");
+                KarnaughMapSolver.MinimizeWithKarnaughMap(expression, true);
             }
         }
 
         public static void PrintMCNF(LogicalExpression expression)
         {
+            Console.WriteLine("\n------MINIMIZED CONJUCTIVE NORMAL FORM-------\n");
             List<string> strTerms = GetStringMCNFterms(expression);
-            List<string> necessaryImplicants = CheckingImplicants(expression);
+            List<string> necessaryImplicants = CheckingImplicants(expression, false);
 
-            if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == (int)Math.Pow(2, (int)(Math.Pow(2, expression.NumberOfVars))) - 1)
-                Console.WriteLine("MCNF = 1 ");
-            else if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == 0)
+            if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == 0)
+                Console.WriteLine("MCNF = 0 ");
+            else if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == (int)Math.Pow(2, (int)(Math.Pow(2, expression.NumberOfVars))) - 1)
                 Console.WriteLine("Doesn't exist");
             else
             {
                 string MCNF1 = strTerms[0];
+                string MCNF = necessaryImplicants[0];
+                for (int i = 1; i < necessaryImplicants.Count; i++)
+                    MCNF += "*" + necessaryImplicants[i];
+
                 for (int i = 1; i < strTerms.Count; i++)
                     MCNF1 += "*" + strTerms[i];
-                Console.WriteLine("Minimized conjunctive normal form (calculating-tabular method):\n" + MCNF1);
+                Console.WriteLine("\nMinimized conjunctive normal form (CALCULATING METHOD):\n" + MCNF);
+                Console.WriteLine("Minimized conjunctive normal form (CALCULATING-TABULAR METHOD):");
+                Console.WriteLine("\nQuine table for PCNF\n");
+                PrintQuineTable(expression, false);
+                Console.WriteLine("\nResult: "+ MCNF1);
+                Console.WriteLine("Minimized conjunction normal form (TABULAR METHOD):\n");
+                KarnaughMapSolver.MinimizeWithKarnaughMap(expression, false);
+
             }
         }
 
         public static string GetStringMDNF(LogicalExpression expression)
         {
             List<string> strTerms = GetStringMDNFterms(expression);
-            List<string> necessaryImplicants = CheckingImplicants(expression);
+            List<string> necessaryImplicants = CheckingImplicants(expression, true);
 
             if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == (int)Math.Pow(2, (int)(Math.Pow(2, expression.NumberOfVars))) - 1)
                 return null;
@@ -369,7 +421,7 @@ namespace AOIS_3
         public static string GetStringMCNF(LogicalExpression expression)
         {
             List<string> strTerms = GetStringMCNFterms(expression);
-            List<string> necessaryImplicants = CheckingImplicants(expression);
+            List<string> necessaryImplicants = CheckingImplicants(expression, false);
 
             if (TruthTableHandler.IndexInterpretation(expression.ExpressionResult) == (int)Math.Pow(2, (int)(Math.Pow(2, expression.NumberOfVars))) - 1)
                 return null;
@@ -519,14 +571,14 @@ namespace AOIS_3
             return true;
         }
 
-        public static List<string> CheckingImplicants(LogicalExpression expression)
+        public static List<string> CheckingImplicants(LogicalExpression expression, bool isPDNF)
         {
             List<string> necessaryImplicants = new List<string>();
-            List<string> terms = GetRDNF(expression);
+            List<string> terms = isPDNF? GetRDNF(expression): GetRCNF(expression);
             string reducedForm = terms[0];
             for (int i = 1; i < terms.Count; i++)
             {
-                reducedForm += "+" + terms[i];
+                reducedForm += isPDNF? "+" + terms[i]: "*" + terms[i];
             }
             LogicalExpression reducedFormExpression = new LogicalExpression(reducedForm);
             int reducedExpressionIndex = TruthTableHandler.IndexInterpretation(reducedFormExpression.ExpressionResult);
@@ -540,7 +592,7 @@ namespace AOIS_3
                     for (int j = 0; j < terms.Count; j++)
                     {
                         if (i != j)
-                            testForm += terms[j] + "+";
+                            testForm += isPDNF? terms[j] + "+": terms[i] + "*";
                     }
                     testForm = testForm.Remove(testForm.Length - 1, 1);
                     LogicalExpression testExpression = new LogicalExpression(testForm);
